@@ -69,7 +69,7 @@ body { margin: 0; padding: 0; }
     });
 
     map.on('load', function () {
-        // add source and layer for museums
+        // add source and layer for points
         map.addSource('2020', {
             type: 'vector',
             url: 'mapbox://s4g.ckm0h7m2614di21paiuc91b6x-7osxq'
@@ -91,7 +91,7 @@ body { margin: 0; padding: 0; }
 
 
 
-// add source and layer for museums
+// add source and layer for points
         map.addSource('2019', {
             type: 'vector',
             url: 'mapbox://s4g.ckm0gi47l21h828m77hsmckoa-9nnpw'
@@ -110,8 +110,31 @@ body { margin: 0; padding: 0; }
             },
             'source-layer': 'DeforestedPoints_2019'
         });
-       
+
+
+        // Adding Polygons
+
+            map.addSource('polygons_2020', {  //name of the source can be anything but it should match source in the add layer
+            type: 'vector',
+            url: 'mapbox://s4g.ckm0eoxss3q3b21tcqylubgi1-0ec36' // tileset id
+        });
+
+        map.addLayer({
+            'id': '2020_polygons', // Layer name can be anything
+            'type': 'fill',
+            'source': 'polygons_2020', // should be same as add source
+            'source-layer':'DeforestedPolygons_2020', // tileset name
+            'layout': {},
+            'paint': {  // Styling 
+                'fill-color': '#088', 
+                'fill-opacity': 0.8
+            }
+        });
+      
     });
+
+
+
 
    
     // enumerate ids of the layers
