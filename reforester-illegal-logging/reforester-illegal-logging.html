@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Show and hide layers</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #menu {
+            background: #14074B;
+            position: absolute;
+            z-index: 1;
+            top: 10px;
+            right: 10px;
+            border-radius: 3px;
+            width: 120px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        #menu a {
+            font-size: 13px;
+            color: grey;
+            display: block;
+            margin: 0;
+            padding: 0;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        #menu a:last-child {
+            border: none;
+        }
+
+        #menu a:hover {
+            background-color: #f8f8f8;
+            color: #404040;
+        }
+
+        #menu a.active {
+            background: linear-gradient(129deg, rgba(161, 0, 242, 1) 0%, rgba(20, 7, 75, 1) 100%);
+            ;
+            color: #ffffff;
+        }
+
+        #menu a.active:hover {
+            background: #BC00DD;
+        }
+    </style>
+</head>
+
+<body>
+    <style>
+
+    </style>
+    <nav id="menu"></nav>
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiczRnIiwiYSI6ImNrZ3NjNDRkdzAwbW8ycXAwcTFqY3oxNDcifQ.3ic06cizkyQNQbuf8hM-XA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/s4g/ckm20vprwaqa517qkbjn1nw45',
+            zoom: 9.55,
+            center: [116.524, -0.748]
+        });
+
+        map.on('load', function() {
+            // Adding Polygons
+
+            map.addSource('deforestation_2020', { //name of the source can be anything but it should match source in the add layer
+                type: 'vector',
+                url: 'mapbox://s4g.ckm0eoxss3q3b21tcqylubgi1-0ec36' // tileset id
+            });
+
+            map.addLayer({
+                'id': '2020', // Layer name can be anything
+                'type': 'fill',
+                'source': 'deforestation_2020', // should be same as add source
+                'source-layer': 'DeforestedPolygons_2020', // tileset name
+                'layout': {
+
+                    //make layer visible by default
+                    'visibility': 'visible'
+                },
+
+                'paint': { // Styling 
+                    'fill-color': '#0DDAFF',
+                    'fill-opacity': 0.8
+                }
+            });
+
+            map.addSource('deforestation_2019', { //name of the source can be anything but it should match source in the add layer
+                type: 'vector',
+                url: 'mapbox://s4g.cklme1wux2mwj27tjselafkwq-1jqfh' // tileset id
+            });
+
+            map.addLayer({
+                'id': '2019', // Layer name can be anything
+                'type': 'fill',
+                'source': 'deforestation_2019', // should be same as add source
+                'source-layer': 'DeforestedPolygons_2019', // tileset name
+                'layout': {
+
+                    //make layer visible by default
+                    'visibility': 'visible'
+
+                },
+                'paint': { // Styling 
+                    'fill-color': '#FFD60D',
+                    'fill-opacity': 0.8
+                }
+            });
+
+
+        });
+
+        // enumerate ids of the layers, identical to id in add layers
+        var toggleableLayerIds = ['2019', '2020'];
+
+        // set up the corresponding toggle button for each layer
+        for (var i = 0; i < toggleableLayerIds.length; i++) {
+            var id = toggleableLayerIds[i];
+
+            var link = document.createElement('a');
+            link.href = '#';
+            link.className = 'active';
+            link.textContent = id;
+
+            link.onclick = function(e) {
+                var clickedLayer = this.textContent;
+                e.preventDefault();
+                e.stopPropagation();
+
+                var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+
+
+                // toggle layer visibility by changing the layout object's visibility property
+                if (visibility === 'visible') {
+                    map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                    this.className = '';
+                } else {
+                    this.className = 'active';
+                    map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+                }
+            };
+
+            var layers = document.getElementById('menu');
+            layers.appendChild(link);
+        };
+
+
+        // When a click event occurs on a feature in the states layer, open a popup at the
+        // location of the click, with description HTML from its properties.
+        map.on('click', '2019', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<h3>' + 'Date: ' + e.features[0].properties.acq_date + '</h3>' +  '<p>' + 'Deforested area: ' + e.features[0].properties.area_ha + ' ha')
+                .addTo(map);
+        });
+
+        // Change the cursor to a pointer when the mouse is over the states layer.
+        map.on('mouseenter', '2019', function() {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', '2019', function() {
+            map.getCanvas().style.cursor = '';
+        });
+
+        // When a click event occurs on a feature in the states layer, open a popup at the
+        // location of the click, with description HTML from its properties.
+        map.on('click', '2020', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<h3>' + 'Date: ' + e.features[0].properties.acq_date + '</h3>' +  '<p>' + 'Deforested area: ' + e.features[0].properties.area_ha + ' ha')
+                .addTo(map);
+        });
+
+        // Change the cursor to a pointer when the mouse is over the states layer.
+        map.on('mouseenter', '2020', function() {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', '2020', function() {
+            map.getCanvas().style.cursor = '';
+        });
+    </script>
+</body></html>

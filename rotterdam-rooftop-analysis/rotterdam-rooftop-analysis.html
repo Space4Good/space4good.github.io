@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Show and hide layers</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <style>
+
+    </style>
+
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiczRnIiwiYSI6ImNrZ3NjNDRkdzAwbW8ycXAwcTFqY3oxNDcifQ.3ic06cizkyQNQbuf8hM-XA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/s4g/ckm20vprwaqa517qkbjn1nw45',
+            zoom: 14,
+            center: [4.473, 51.900]
+        });
+
+        map.on('load', function() {
+            // Adding Polygons
+
+            map.addSource('rooftop_analysis', { //name of the source can be anything but it should match source in the add layer
+                type: 'vector',
+                url: 'mapbox://s4g.5erdpqmr' // tileset id
+            });
+
+            map.addLayer({
+                'id': 'rooftop_analyis', // Layer name can be anything
+                'type': 'fill',
+                'source': 'rooftop_analysis', // should be same as add source
+                'source-layer': 'roofs_rotterdam_wgs84-8jb0ft', // tileset name
+                'layout': {},
+                'paint': { // Styling 
+                    'fill-color': {
+                        property: 'use_1',
+                        stops: [
+                            [0, '#A0E2F9'],
+                            [1, '#00FF00'],
+                            [2, '#FCEA10'],
+                            [3, '#FB2323'],
+                            [4, '#36A9E1'],
+                            [5, '#FF4F00'],
+                            [6, '#00AEFF'],
+                            [7, '#512C7A'],
+                            [8, '#8D3509'],
+                            [9, '#FB9A99'],
+                            [10, '#B66E00'],
+                            [11, '#EC31FC'],
+                            [12, '#000000'],
+                            [13, '#EAB450'],
+                            [14, '#33A02C'],
+                            [15, '#706F6F'],
+                        ]
+
+                    }
+
+
+                }
+            });
+
+        });
+
+
+
+        // Add zoom and rotation controls to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+    </script>
+</body></html>
